@@ -263,6 +263,12 @@ unsigned decode_newstream(unsigned sample_rate, unsigned supported_rates[]) {
 		}
 	);
 
+	// reduce threshold if we don't have enough room in outputbuf
+	if (output.threshold * sample_rate / 10 > outputbuf->size / BYTES_PER_FRAME / 2) {
+		output.threshold = (outputbuf->size / BYTES_PER_FRAME / 2 * 10) / sample_rate;
+		LOG_WARN("Reducing threshold to %d ms - update the outputbuffer size!", output.threshold * 10);
+	}	
+
 	return sample_rate;
 }
 
